@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.StaffMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.Staff">
+    <id column="staff_id" jdbcType="INTEGER" property="staffId" />
+    <result column="staff_name" jdbcType="VARCHAR" property="staffName" />
+    <result column="staff_age" jdbcType="INTEGER" property="staffAge" />
+    <result column="staff_sex" jdbcType="VARCHAR" property="staffSex" />
+    <result column="staff_phone" jdbcType="VARCHAR" property="staffPhone" />
+    <result column="staff_img" jdbcType="VARCHAR" property="staffImg" />
+    <result column="staff_entryTime" jdbcType="DATE" property="staffEntrytime" />
+    <result column="staff_job" jdbcType="VARCHAR" property="staffJob" />
+    <result column="staff_title" jdbcType="VARCHAR" property="staffTitle" />
+    <result column="staff_briefIntroduction" jdbcType="VARCHAR" property="staffBriefintroduction" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from staff
+    where staff_id = #{staffId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.Staff">
+    insert into staff (staff_id, staff_name, staff_age,
+      staff_sex, staff_phone, staff_img,
+      staff_entryTime, staff_job, staff_title,
+      staff_briefIntroduction)
+    values (#{staffId,jdbcType=INTEGER}, #{staffName,jdbcType=VARCHAR}, #{staffAge,jdbcType=INTEGER},
+      #{staffSex,jdbcType=VARCHAR}, #{staffPhone,jdbcType=VARCHAR}, #{staffImg,jdbcType=VARCHAR},
+      #{staffEntrytime,jdbcType=DATE}, #{staffJob,jdbcType=VARCHAR}, #{staffTitle,jdbcType=VARCHAR},
+      #{staffBriefintroduction,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.Staff">
+    update staff
+    set staff_name = #{staffName,jdbcType=VARCHAR},
+      staff_age = #{staffAge,jdbcType=INTEGER},
+      staff_sex = #{staffSex,jdbcType=VARCHAR},
+      staff_phone = #{staffPhone,jdbcType=VARCHAR},
+      staff_img = #{staffImg,jdbcType=VARCHAR},
+      staff_entryTime = #{staffEntrytime,jdbcType=DATE},
+      staff_job = #{staffJob,jdbcType=VARCHAR},
+      staff_title = #{staffTitle,jdbcType=VARCHAR},
+      staff_briefIntroduction = #{staffBriefintroduction,jdbcType=VARCHAR}
+    where staff_id = #{staffId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select staff_id, staff_name, staff_age, staff_sex, staff_phone, staff_img, staff_entryTime,
+    staff_job, staff_title, staff_briefIntroduction
+    from staff
+    where staff_id = #{staffId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select staff_id, staff_name, staff_age, staff_sex, staff_phone, staff_img, staff_entryTime,
+    staff_job, staff_title, staff_briefIntroduction
+    from staff
+  </select>
+  <select id="findByCondition" resultMap="BaseResultMap" parameterType="com.care.center.model.Staff">
+    select staff_id, staff_name, staff_age, staff_sex, staff_phone, staff_img, staff_entryTime,
+    staff_job, staff_title, staff_briefIntroduction
+    from staff
+    <where>
+      <include refid="query_staff_where"/>
+    </where>
+  </select>
+
+  <sql id="query_staff_where">
+    <if test="staffId!=0 and staffId!='' and staffId!=null">
+      AND staff_id=#{staffId}
+    </if>
+    <if test="staffName!=null"><!--模糊查询-->
+      AND staff_name LIKE concat(#{staffName},'%')
+    </if>
+    <if test="staffAge!=0 and staffAge!='' and staffAge!=null">
+      AND staff_age = #{staffAge}
+    </if>
+    <if test="staffSex!=null and staffSex!=''">
+      AND staff_sex = #{staffSex}
+    </if>
+    <if test="staffPhone!=null and staffPhone!=''">
+      AND staff_phone = #{staffPhone}
+    </if>
+    <if test="staffImg!=null and staffImg!=''">
+      AND staff_img = #{staffImg}
+    </if>
+    <if test="staffEntrytime!=null and staffEntrytime!=''">
+      AND staff_entryTime = #{staffEntrytime}
+    </if>
+    <if test="staffJob!=null and staffJob!=''">
+      AND staff_job = #{staffJob}
+    </if>
+    <if test="staffTitle!=null and staffTitle!=''">
+      AND staff_title = #{staffTitle}
+    </if>
+    <if test="staffBriefintroduction!=null and staffBriefintroduction!=''">
+      AND staff_briefIntroduction = #{staffBriefintroduction}
+    </if>
+  </sql>
+
+  <update id="updateByCondition" parameterType="com.care.center.model.Staff">
+    UPDATE staff
+    <set>
+      <if test="staffName!=null"><!--模糊查询-->
+         staff_name = #{staffName},
+      </if>
+      <if test="staffAge!=0 and staffAge!='' and staffAge!=null">
+         staff_age = #{staffAge},
+      </if>
+      <if test="staffSex!=null and staffSex!=''">
+         staff_sex = #{staffSex},
+      </if>
+      <if test="staffPhone!=null and staffPhone!=''">
+         staff_phone = #{staffPhone},
+      </if>
+      <if test="staffImg!=null and staffImg!=''">
+         staff_img = #{staffImg},
+      </if>
+      <if test="staffEntrytime!=null and staffEntrytime!=''">
+         staff_entryTime = #{staffEntrytime},
+      </if>
+      <if test="staffJob!=null and staffJob!=''">
+         staff_job = #{staffJob},
+      </if>
+      <if test="staffTitle!=null and staffTitle!=''">
+         staff_title = #{staffTitle},
+      </if>
+      <if test="staffBriefintroduction!=null and staffBriefintroduction!=''">
+         staff_briefIntroduction = #{staffBriefintroduction},
+      </if>
+    </set>
+    where staff_id = #{staffId}
+  </update>
+
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.NursingContentMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.NursingContent">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+    <result column="nursing_level" jdbcType="VARCHAR" property="nursingLevel" />
+    <result column="nursing_name" jdbcType="VARCHAR" property="nursingName" />
+    <result column="serial_price" jdbcType="DECIMAL" property="serialPrice" />
+    <result column="describe" jdbcType="VARCHAR" property="describe" />
+    <result column="increment_flag" jdbcType="INTEGER" property="incrementFlag" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from nursing_content
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.NursingContent">
+    insert into nursing_content (id, remarks, del_flag, 
+      serial_number, nursing_level, nursing_name, 
+      serial_price, describe, increment_flag, 
+      status)
+    values (#{id,jdbcType=INTEGER}, #{remarks,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR}, 
+      #{serialNumber,jdbcType=VARCHAR}, #{nursingLevel,jdbcType=VARCHAR}, #{nursingName,jdbcType=VARCHAR}, 
+      #{serialPrice,jdbcType=DECIMAL}, #{describe,jdbcType=VARCHAR}, #{incrementFlag,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.NursingContent">
+    update nursing_content
+    set remarks = #{remarks,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=VARCHAR},
+      serial_number = #{serialNumber,jdbcType=VARCHAR},
+      nursing_level = #{nursingLevel,jdbcType=VARCHAR},
+      nursing_name = #{nursingName,jdbcType=VARCHAR},
+      serial_price = #{serialPrice,jdbcType=DECIMAL},
+      describe = #{describe,jdbcType=VARCHAR},
+      increment_flag = #{incrementFlag,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, remarks, del_flag, serial_number, nursing_level, nursing_name, serial_price, 
+    describe, increment_flag, status
+    from nursing_content
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, remarks, del_flag, serial_number, nursing_level, nursing_name, serial_price,
+    describe, increment_flag, status
+    from nursing_content
+  </select>
+  <select id="selDistinctName" resultMap="BaseResultMap">
+    select id,nursing_name
+    from nursing_content
+    group by nursing_name
+  </select>
+</mapper>

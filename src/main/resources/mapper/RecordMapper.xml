@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.RecordMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.Record">
+    <id column="reid" jdbcType="INTEGER" property="reid" />
+    <result column="intime" jdbcType="TIMESTAMP" property="intime" />
+    <result column="indescribe" jdbcType="VARCHAR" property="indescribe" />
+    <result column="cid" jdbcType="VARCHAR" property="cid" />
+    <result column="rid" jdbcType="VARCHAR" property="rid" />
+    <result column="outtime" jdbcType="TIMESTAMP" property="outtime" />
+    <result column="outdescribe" jdbcType="VARCHAR" property="outdescribe" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from record
+    where reid = #{reid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.Record">
+    insert into record (reid, intime, indescribe, 
+      cid, rid, outtime, 
+      outdescribe, status)
+    values (#{reid,jdbcType=INTEGER}, #{intime,jdbcType=TIMESTAMP}, #{indescribe,jdbcType=VARCHAR}, 
+      #{cid,jdbcType=VARCHAR}, #{rid,jdbcType=VARCHAR}, #{outtime,jdbcType=TIMESTAMP}, 
+      #{outdescribe,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.Record">
+    update record
+    set intime = #{intime,jdbcType=TIMESTAMP},
+      indescribe = #{indescribe,jdbcType=VARCHAR},
+      cid = #{cid,jdbcType=VARCHAR},
+      rid = #{rid,jdbcType=VARCHAR},
+      outtime = #{outtime,jdbcType=TIMESTAMP},
+      outdescribe = #{outdescribe,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR}
+    where reid = #{reid,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select reid, intime, indescribe, cid, rid, outtime, outdescribe, status
+    from record
+    where reid = #{reid,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select reid, intime, indescribe, cid, rid, outtime, outdescribe, status
+    from record
+  </select>
+
+  <select id="selectByBuilding" resultMap="BaseResultMap">
+    SELECT reid, intime, indescribe, cid, rid, outtime, outdescribe, status
+    FROM record
+    WHERE status = #{status} and rid LIKE #{build}
+  </select>
+  <update id="toTui" >
+    update record
+    set
+      outtime = NOW(),
+      outdescribe = #{des},
+      `status` = 'over'
+    where rid = #{rid}
+  </update>
+  <update id="upDes" >
+    update record
+    set
+      indescribe = #{des},
+      rid = #{rid}
+    where reid = #{reid}
+  </update>
+  <insert id="insertNew" >
+    insert into record (reid, intime, indescribe,
+      cid, rid, outtime,
+      outdescribe, status)
+    values (null,NOW(), #{indescribe},
+      #{cid}, #{rid},null,
+      null,
+      'using')
+  </insert>
+
+
+</mapper>

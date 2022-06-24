@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.NursingRecordMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.NursingRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+    <result column="customer_id" jdbcType="INTEGER" property="customerId" />
+    <result column="context_id" jdbcType="INTEGER" property="contextId" />
+    <result column="nursing_time" jdbcType="TIMESTAMP" property="nursingTime" />
+    <result column="nursing_content" jdbcType="VARCHAR" property="nursingContent" />
+    <result column="nursing_count" jdbcType="INTEGER" property="nursingCount" />
+    <result column="staffinfo_id" jdbcType="INTEGER" property="staffinfoId" />
+  </resultMap>
+  <resultMap id="connResultMap" type="com.care.center.model.NursingRecord" extends="BaseResultMap">
+    <association column="nursing_content" property="content" javaType="com.care.center.model.NursingContent">
+      <id column="nc_id" property="id"></id>
+      <result column="nc_remarks" property="remarks"></result>
+      <result column="nc_delFlag" property="delFlag"></result>
+      <result column="serial_number" property="serialNumber"></result>
+      <result column="nursing_level" property="nursingLevel"></result>
+      <result column="nursing_name" property="nursingName"></result>
+      <result column="serial_price" property="serialPrice"></result>
+      <result column="describe" property="describe"></result>
+      <result column="increment_flag" property="incrementFlag"></result>
+      <result column="nc_status" property="status"></result>
+    </association>
+  </resultMap>
+  <resultMap id="connectResultMap" type="com.care.center.model.NursingRecord" extends="connResultMap">
+    <association column="nursing_level" property="level" javaType="com.care.center.model.NursingLevel">
+      <id column="nl_id" property="id"></id>
+      <result column="nl_remarks" property="remarks"></result>
+      <result column="nl_delFlag" property="delFlag"></result>
+      <result column="level_name" property="levelName"></result>
+      <result column="level_status" property="levelStatus"></result>
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from nursing_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.NursingRecord">
+    insert into nursing_record (id, remarks, del_flag, 
+      customer_id, context_id, nursing_time, 
+      nursing_content, nursing_count, staffinfo_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{remarks,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR}, 
+      #{customerId,jdbcType=INTEGER}, #{contextId,jdbcType=INTEGER}, #{nursingTime,jdbcType=TIMESTAMP}, 
+      #{nursingContent,jdbcType=VARCHAR}, #{nursingCount,jdbcType=INTEGER}, #{staffinfoId,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.NursingRecord">
+    update nursing_record
+    set remarks = #{remarks,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=VARCHAR},
+      customer_id = #{customerId,jdbcType=INTEGER},
+      context_id = #{contextId,jdbcType=INTEGER},
+      nursing_time = #{nursingTime,jdbcType=TIMESTAMP},
+      nursing_content = #{nursingContent,jdbcType=VARCHAR},
+      nursing_count = #{nursingCount,jdbcType=INTEGER},
+      staffinfo_id = #{staffinfoId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, remarks, del_flag, customer_id, context_id, nursing_time, nursing_content, 
+    nursing_count, staffinfo_id
+    from nursing_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, remarks, del_flag, customer_id, context_id, nursing_time, nursing_content, 
+    nursing_count, staffinfo_id
+    from nursing_record
+  </select>
+  <select id="queryAll" resultMap="connectResultMap">
+    select nr.id, nr.remarks, nr.del_flag, nr.customer_id, nr.context_id, nr.nursing_time, nr.nursing_content, nr.nursing_count, nr.staffinfo_id,
+    nc.nursing_name, nc.serial_price, nc.describe,
+    nl.level_name
+    from nursing_record nr,nursing_content nc,nursing_level nl
+    <where>
+      nr.nursing_content=nc.id
+      and nc.nursing_level=nl.id
+      <if test="customerId != null and customerId != ''">
+        and customer_id=#{customerId}
+      </if>
+      <if test="staffinfoId != null and staffinfoId != ''">
+        and staffinfo_id=#{staffinfoId}
+      </if>
+      <if test="nursingContent != null and nursingContent != ''">
+        and nursing_content=#{nursingContent}
+      </if>
+<!--      <if test="nursingTime != null and nursingTime != ''">-->
+<!--        and nursing_time like concat(#{nursingTime},'%')-->
+<!--      </if>-->
+    </where>
+    order by nursing_time desc
+  </select>
+</mapper>

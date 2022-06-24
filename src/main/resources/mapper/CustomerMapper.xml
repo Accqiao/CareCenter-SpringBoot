@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.CustomerMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.Customer">
+    <id column="cid" jdbcType="VARCHAR" property="cid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="illness" jdbcType="VARCHAR" property="illness" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="photo" jdbcType="VARCHAR" property="photo" />
+  </resultMap>
+  <resultMap id="ConnResultMap" type="com.care.center.model.Customer"  extends="BaseResultMap">
+    <collection property="distributions" ofType="com.care.center.model.Distribution">
+      <id column="did" jdbcType="INTEGER" property="id" />
+      <result column="d_cid" jdbcType="VARCHAR" property="cid" />
+      <result column="d_supply_id" jdbcType="INTEGER" property="supplyId" />
+      <result column="d_add_date" jdbcType="TIMESTAMP" property="addDate" />
+      <association property="supply" column="supply_id" javaType="com.care.center.model.Supply">
+        <id column="sid" jdbcType="INTEGER" property="supplyId" />
+        <result column="fid" jdbcType="INTEGER" property="foodId" />
+        <result column="supply_type" jdbcType="VARCHAR" property="supplyType" />
+        <result column="supply_week" jdbcType="VARCHAR" property="supplyWeek" />
+        <result column="s_add_date" jdbcType="TIMESTAMP" property="addDate" />
+        <association property="food" column="food_id" javaType="com.care.center.model.Food">
+          <id column="food_id" jdbcType="INTEGER" property="foodId" />
+          <result column="food_name" jdbcType="VARCHAR" property="foodName" />
+          <result column="food_type" jdbcType="VARCHAR" property="foodType" />
+          <result column="food_sign" jdbcType="VARCHAR" property="foodSign" />
+          <result column="food_price" jdbcType="DECIMAL" property="foodPrice" />
+          <result column="food_photo" jdbcType="VARCHAR" property="foodPhoto" />
+          <result column="is_steam" jdbcType="VARCHAR" property="isSteam" />
+          <result column="description" jdbcType="VARCHAR" property="description" />
+        </association>
+      </association>
+    </collection>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from customer
+    where cid = #{cid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.Customer">
+    insert into customer (cid, name, age, 
+      sex, phone, illness, 
+      notes, photo)
+    values (#{cid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, 
+      #{sex,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{illness,jdbcType=VARCHAR}, 
+      #{notes,jdbcType=VARCHAR}, #{photo,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.Customer">
+    update customer
+    set name = #{name,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      sex = #{sex,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      illness = #{illness,jdbcType=VARCHAR},
+      notes = #{notes,jdbcType=VARCHAR},
+      photo = #{photo,jdbcType=VARCHAR}
+    where cid = #{cid,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select cid, name, age, sex, phone, illness, notes, photo
+    from customer
+    where cid = #{cid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select cid, name, age, sex, phone, illness, notes, photo
+    from customer
+  </select>
+  <select id="findByCondition" resultMap="BaseResultMap" parameterType="com.care.center.model.Customer">
+    select cid, name, age, sex, phone, illness, notes, photo
+    from customer
+    <where>
+      <include refid="query_customer_where"/>
+    </where>
+  </select>
+
+  <sql id="query_customer_where">
+    <if test="cid!=0 and cid!='' and cid!=null">
+      AND cid=#{cid}
+    </if>
+    <if test="name!=null"><!--模糊查询-->
+      AND name LIKE concat(#{name},'%')
+    </if>
+    <if test="age!=0 and age!='' and age!=null">
+      AND age = #{age}
+    </if>
+    <if test="sex!=null and sex!=''">
+      AND sex = #{sex}
+    </if>
+    <if test="phone!=null and phone!=''">
+      AND phone = #{phone}
+    </if>
+    <if test="illness!=null and illness!=''">
+      AND illness = #{illness}
+    </if>
+    <if test="notes!=null and notes!=''">
+      AND notes = #{notes}
+    </if>
+    <if test="photo!=null and photo!=''">
+      AND photo = #{photo}
+    </if>
+  </sql>
+
+  <update id="updateByCondition" parameterType="com.care.center.model.Customer">
+    UPDATE customer
+    <set>
+      <if test="name!=null"><!--模糊查询-->
+        name = #{name},
+      </if>
+      <if test="age!=0 and age!='' and age!=null">
+        age = #{age},
+      </if>
+      <if test="sex!=null and sex!=''">
+        sex = #{sex},
+      </if>
+      <if test="phone!=null and phone!=''">
+        phone = #{phone},
+      </if>
+      <if test="illness!=null and illness!=''">
+        illness = #{illness},
+      </if>
+      <if test="notes!=null and notes!=''">
+        notes = #{notes},
+      </if>
+      <if test="photo!=null and photo!=''">
+        photo = #{photo},
+      </if>
+    </set>
+    where cid = #{cid}
+  </update>
+
+  <select id="findAllDistributionByUser" resultMap="ConnResultMap" parameterType="java.lang.String">
+    select s.supply_id sid, s.food_id fid, s.supply_type, s.supply_week, s.add_date s_add_date,
+    f.food_id, f.food_name, f.food_type, f.food_sign, f.food_price,f.food_photo, f.is_steam, f.description,
+    ci.cid customer_id, ci.name, ci.age, ci.sex, ci.phone, ci.illness, ci.notes, ci.photo,
+    d.id, d.cid, d.supply_id, d.add_date
+    from customer ci
+    INNER JOIN distribution d on ci.cid=d.cid
+    LEFT JOIN supply s ON d.supply_id = s.supply_id
+    LEFT JOIN food f ON f.food_id = s.food_id
+	where YEARWEEK(date_format(s.add_date,'%Y-%m-%d'),1) = YEARWEEK(now(),1) and ci.cid=#{id}
+  </select>
+</mapper>

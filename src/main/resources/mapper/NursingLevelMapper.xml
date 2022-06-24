@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.NursingLevelMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.NursingLevel">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+    <result column="level_name" jdbcType="VARCHAR" property="levelName" />
+    <result column="level_status" jdbcType="INTEGER" property="levelStatus" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from nursing_level
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.NursingLevel">
+    insert into nursing_level (id, remarks, del_flag, 
+      level_name, level_status)
+    values (#{id,jdbcType=INTEGER}, #{remarks,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR}, 
+      #{levelName,jdbcType=VARCHAR}, #{levelStatus,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.NursingLevel">
+    update nursing_level
+    set remarks = #{remarks,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=VARCHAR},
+      level_name = #{levelName,jdbcType=VARCHAR},
+      level_status = #{levelStatus,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, remarks, del_flag, level_name, level_status
+    from nursing_level
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, remarks, del_flag, level_name, level_status
+    from nursing_level
+  </select>
+  <select id="queryAll" parameterType="com.care.center.model.NursingLevel" resultMap="BaseResultMap">
+    select id, remarks, del_flag, level_name, level_status
+    from nursing_level
+    <where>
+      <if test="id != null and id != ''">
+        id=#{id}
+      </if>
+      <if test="levelName != null and levelName != ''">
+        and level_name like concat('%',#{levelName},'%')
+      </if>
+      <if test="delFlag != null and delFlag != ''">
+        and del_flag=#{delFlag}
+      </if>
+      <if test="levelStatus != null and levelStatus != ''">
+        and level_status=#{levelStatus}
+      </if>
+    </where>
+  </select>
+  <select id="selDistinctLevelName" resultMap="BaseResultMap">
+    select distinct level_name
+    from nursing_level
+</select>
+
+
+</mapper>

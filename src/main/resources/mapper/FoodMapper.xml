@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.FoodMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.Food">
+    <id column="food_id" jdbcType="INTEGER" property="foodId" />
+    <result column="food_name" jdbcType="VARCHAR" property="foodName" />
+    <result column="food_type" jdbcType="VARCHAR" property="foodType" />
+    <result column="food_sign" jdbcType="VARCHAR" property="foodSign" />
+    <result column="food_price" jdbcType="DECIMAL" property="foodPrice" />
+    <result column="food_photo" jdbcType="VARCHAR" property="foodPhoto" />
+    <result column="is_steam" jdbcType="VARCHAR" property="isSteam" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+  <resultMap id="ConnResultMap" type="com.care.center.model.Food"  extends="BaseResultMap">
+    <collection property="supplyList" ofType="com.care.center.model.Supply">
+      <id column="supply_id" jdbcType="INTEGER" property="supplyId" />
+      <result column="fid" jdbcType="INTEGER" property="foodId" />
+      <result column="supply_type" jdbcType="VARCHAR" property="supplyType" />
+      <result column="supply_week" jdbcType="VARCHAR" property="supplyWeek" />
+      <result column="add_date" jdbcType="TIMESTAMP" property="addDate" />
+    </collection>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from food
+    where food_id = #{foodId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.Food">
+    insert into food (food_id, food_name, food_type, 
+      food_sign, food_price, food_photo, 
+      is_steam, description)
+    values (#{foodId,jdbcType=INTEGER}, #{foodName,jdbcType=VARCHAR}, #{foodType,jdbcType=VARCHAR}, 
+      #{foodSign,jdbcType=VARCHAR}, #{foodPrice,jdbcType=DECIMAL}, #{foodPhoto,jdbcType=VARCHAR}, 
+      #{isSteam,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.Food">
+    update food
+    set food_name = #{foodName,jdbcType=VARCHAR},
+      food_type = #{foodType,jdbcType=VARCHAR},
+      food_sign = #{foodSign,jdbcType=VARCHAR},
+      food_price = #{foodPrice,jdbcType=DECIMAL},
+      food_photo = #{foodPhoto,jdbcType=VARCHAR},
+      is_steam = #{isSteam,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR}
+    where food_id = #{foodId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select food_id, food_name, food_type, food_sign, food_price, food_photo, is_steam, 
+    description
+    from food
+    where food_id = #{foodId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select food_id, food_name, food_type, food_sign, food_price, food_photo, is_steam, 
+    description
+    from food
+  </select>
+
+  <select id="findAllSupplyByFood" resultMap="ConnResultMap" parameterType="java.lang.Integer">
+    select f.food_id, f.food_name, f.food_type, f.food_sign, f.food_price,
+    f.food_photo, f.is_steam, f.description,
+    s.supply_id, s.food_id fid, s.supply_type, s.supply_week, s.add_date
+    from food f
+    LEFT JOIN supply s
+    ON f.food_id = s.food_id
+    where f.food_id = #{id} AND YEARWEEK(date_format(s.add_date,'%Y-%m-%d'),1) = YEARWEEK(now(),1);
+  </select>
+
+  <select id="findByCondition" resultMap="BaseResultMap" parameterType="com.care.center.model.Food">
+    select food_id, food_name, food_type, food_sign, food_price, food_photo, is_steam, description
+    from food
+    <where>
+      <include refid="query_food_where"/>
+    </where>
+  </select>
+
+  <sql id="query_food_where">
+    <if test="foodId!=0 and foodId!='' and foodId!=null">
+      AND food_id=#{foodId}
+    </if>
+    <if test="foodName!=null"><!--模糊查询-->
+      AND food_name LIKE concat(#{foodName},'%')
+    </if>
+    <if test="foodType!=null and foodType!=''">
+      AND food_type = #{foodType}
+    </if>
+    <if test="foodSign!=null and foodSign!=''">
+      AND food_sign = #{foodSign}
+    </if>
+    <if test="foodPrice>0 and foodPrice!='' and foodPrice!=null">
+      AND food_price = #{foodPrice}
+    </if>
+    <if test="foodPhoto!=null and foodPhoto!=''">
+      AND food_photo = #{foodPhoto}
+    </if>
+    <if test="isSteam!=null and isSteam!=''">
+      AND is_steam = #{isSteam}
+    </if>
+    <if test="description!=null and description!=''">
+      AND description = #{description}
+    </if>
+  </sql>
+
+  <update id="updateByCondition" parameterType="com.care.center.model.Food">
+    UPDATE food
+    <set>
+      <if test="foodName!=null">
+        food_name = #{foodName},
+      </if>
+      <if test="foodType!=null and foodType!=''">
+        food_type = #{foodType},
+      </if>
+      <if test="foodSign!=null and foodSign!=''">
+        food_sign = #{foodSign},
+      </if>
+      <if test="foodPrice>0 and foodPrice!='' and foodPrice!=null">
+        food_price = #{foodPrice},
+      </if>
+      <if test="foodPhoto!=null and foodPhoto!=''">
+        food_photo = #{foodPhoto},
+      </if>
+      <if test="isSteam!=null and isSteam!=''">
+        is_steam = #{isSteam},
+      </if>
+      <if test="description!=null and description!=''">
+        description = #{description},
+      </if>
+    </set>
+    where food_id = #{foodId}
+  </update>
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.SupplyMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.Supply">
+    <id column="supply_id" jdbcType="INTEGER" property="supplyId" />
+    <result column="food_id" jdbcType="INTEGER" property="foodId" />
+    <result column="supply_type" jdbcType="VARCHAR" property="supplyType" />
+    <result column="supply_week" jdbcType="VARCHAR" property="supplyWeek" />
+    <result column="add_date" jdbcType="TIMESTAMP" property="addDate" />
+  </resultMap>
+  <resultMap id="ConnResultMap" type="com.care.center.model.Supply"  extends="BaseResultMap">
+  <!--    一对一关联   extends继承父表字段
+          property  一对一关联，该封装对象的属性名
+          column  两表关联的字段名
+          javaType 一对一关联，父表封装的对象的数据类型，类名-->
+    <association property="food" column="food_id" javaType="com.care.center.model.Food">
+      <id column="fid" jdbcType="INTEGER" property="foodId" />
+      <result column="food_name" jdbcType="VARCHAR" property="foodName" />
+      <result column="food_type" jdbcType="VARCHAR" property="foodType" />
+      <result column="food_sign" jdbcType="VARCHAR" property="foodSign" />
+      <result column="food_price" jdbcType="DECIMAL" property="foodPrice" />
+      <result column="food_photo" jdbcType="VARCHAR" property="foodPhoto" />
+      <result column="is_steam" jdbcType="VARCHAR" property="isSteam" />
+      <result column="description" jdbcType="VARCHAR" property="description" />
+    </association>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from supply
+    where supply_id = #{supplyId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.Supply">
+    insert into supply (supply_id, food_id, supply_type, 
+      supply_week, add_date)
+    values (#{supplyId,jdbcType=INTEGER}, #{foodId,jdbcType=INTEGER}, #{supplyType,jdbcType=VARCHAR}, 
+      #{supplyWeek,jdbcType=VARCHAR}, #{addDate,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.Supply">
+    update supply
+    set food_id = #{foodId,jdbcType=INTEGER},
+      supply_type = #{supplyType,jdbcType=VARCHAR},
+      supply_week = #{supplyWeek,jdbcType=VARCHAR},
+      add_date = #{addDate,jdbcType=TIMESTAMP}
+    where supply_id = #{supplyId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select supply_id, food_id, supply_type, supply_week, add_date
+    from supply
+    where supply_id = #{supplyId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select supply_id, food_id, supply_type, supply_week, add_date
+    from supply
+  </select>
+
+  <select id="findAllSupplyAndFood" resultMap="ConnResultMap" parameterType="com.care.center.model.Supply">
+    select s.supply_id, s.food_id, s.supply_type, s.supply_week, s.add_date,
+    f.food_id fid, f.food_name, f.food_type, f.food_sign, f.food_price,
+    f.food_photo, f.is_steam, f.description
+    from supply s
+    LEFT JOIN food f
+    ON f.food_id = s.food_id
+    where YEARWEEK(date_format(s.add_date,'%Y-%m-%d'),1) = YEARWEEK(now(),1)
+    <if test="supplyId!=0 and supplyId!='' and supplyId!=null">
+      AND s.supply_id=#{foodId}
+    </if>
+    <if test="foodId!=0 and foodId!='' and foodId!=null">
+      AND s.food_id=#{foodId}
+    </if>
+    <if test="supplyType!='' and supplyType!=null">
+      AND s.supply_type=#{supplyType}
+    </if>
+    <if test="supplyWeek!='' and supplyWeek!=null">
+      AND s.supply_week=#{supplyWeek}
+    </if>
+    <if test="addDate!='' and addDate!=null">
+      AND s.add_date=#{addDate}
+    </if>
+    ORDER BY s.add_date DESC
+  </select>
+</mapper>

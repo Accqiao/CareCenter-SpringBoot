@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.center.mapper.RoomMapper">
+  <resultMap id="BaseResultMap" type="com.care.center.model.Room">
+    <id column="rid" jdbcType="VARCHAR" property="rid" />
+    <result column="floor" jdbcType="INTEGER" property="floor" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="des" jdbcType="VARCHAR" property="des" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from room
+    where rid = #{rid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.care.center.model.Room">
+    insert into room (rid, floor, name, 
+      status, des)
+    values (#{rid,jdbcType=VARCHAR}, #{floor,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{des,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.care.center.model.Room">
+    update room
+    set floor = #{floor,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      des = #{des,jdbcType=VARCHAR}
+    where rid = #{rid,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select rid, floor, name, status, des
+    from room
+    where rid = #{rid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select rid, floor, name, status, des
+    from room
+  </select>
+  <select id="selectByBuilding" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT rid, floor,name, status, des
+    FROM room
+    WHERE rid LIKE #{build}
+  </select>
+  <update id="toTui" >
+    update room
+    set
+      `status` = #{sta}
+    where rid = #{rid}
+  </update>
+  <select id="selectByUse" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT rid, floor,name, status, des
+    FROM room
+    WHERE `status` = #{use}
+  </select>
+
+  <select id="selRoom" resultType="String">
+    select LEFT(rid,1)
+    from room
+    group by LEFT(rid,1)
+  </select>
+
+
+
+</mapper>
